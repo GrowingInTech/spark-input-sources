@@ -1,0 +1,46 @@
+# hive
+TempStatsStore/
+metastore/
+metastore_db/
+sql/hive-thriftserver/test_warehouses
+warehouse/
+spark-warehouse/
+
+# generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.DS_Store?
+*.swp
+*.out
+*.sc
+derby.log
+
+# sbt specific
+.bsp/
+project/boot
+lib_managed/*
+project/build/target
+project/build/lib_managed
+project/build/src_managed
+project/plugins/lib_managed
+project/plugins/target
+project/plugins/src_managed
+project/plugins/project
+
+core/lib_managed
+core/target
+pubsub/lib_managed
+pubsub/target
+
+target/*
+project/target
+project/project
+
+# intellij
+*.eml
+*.iml
+*.ipr
+*.iws
+.*.sw?
+.idea
