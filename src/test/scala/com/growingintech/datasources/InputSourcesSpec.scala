@@ -232,18 +232,23 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
   }
 
   "BigQuerySource" should {
-    "return a df after reading a BQ table" in {
+    "return a df after reading a BQ table with nested config test" in {
       val strConfig: String =
         s"""
            |{
-           | type: big-query-source
-           | query: "SELECT * FROM `data-projects-322512.dustinsmith_info.daily_events` LIMIT 10"
-           | dataset: dustinsmith_info
+           | pipeline-name: BQ Test
+           | data: {
+           |  type: big-query-source
+           |  query: "SELECT * FROM `data-projects-322512.dustinsmith_info.daily_events` LIMIT 10"
+           |  dataset: dustinsmith_info
+           |  }
            |}""".stripMargin
-      val config: InputSources = ConfigSource.fromConfig(ConfigFactory.parseString(strConfig))
-        .loadOrThrow[InputSources]
-      val df: DataFrame = config.loadData
+      case class Params(pipelineName: String, data: InputSources)
+      val config: Params = ConfigSource.fromConfig(ConfigFactory.parseString(strConfig))
+        .loadOrThrow[Params]
+      val df: DataFrame = config.data.loadData
 
+      assert(config.pipelineName == "BQ Test")
       assert(df.count == 10)
     }
   }
