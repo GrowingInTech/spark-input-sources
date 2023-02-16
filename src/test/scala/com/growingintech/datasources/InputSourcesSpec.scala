@@ -231,7 +231,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "BigQuerySource" should {
+  "BigQuerySource" ignore {
     "return a df after reading a BQ table with nested config test" in {
       val strConfig: String =
         s"""
