@@ -164,7 +164,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when delta is not specified but we have versionOrTime" in {
       val strConfig: String =
         s"""
@@ -183,7 +183,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when delta is not specified but we have optionValue" in {
       val strConfig: String =
         s"""
@@ -229,7 +229,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when optionValue is defined but versionOrTime is not" in {
       val strConfig: String =
         s"""
@@ -248,7 +248,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when versionOrTime is defined but optionValue is not" in {
       val strConfig: String =
         s"""
