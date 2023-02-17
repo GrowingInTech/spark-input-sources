@@ -30,7 +30,7 @@ sealed trait InputSources {
 
 case class FileSource(
                        filePath: String,
-                       filter: String,
+                       filter: Option[String] = None,
                        format: String,
                        versionOrTime: Option[String] = None,
                        optionValue: Option[String] = None
@@ -38,26 +38,51 @@ case class FileSource(
 
   override def loadData: DataFrame = {
 
-    if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
-      spark.read.format(format).load(filePath).filter(filter)
+    if (filter.isDefined) {
+      withFilter
     }
     else {
-      if (versionOrTime.isDefined & format != "delta") {
-        throw new IllegalArgumentException("versionOrTime cannot be defined when fileType is not delta.")
-      }
-      if (optionValue.isDefined & format != "delta") {
-        throw new IllegalArgumentException("optionValue cannot be defined when fileType is not delta.")
-      }
-      if (optionValue.isDefined & versionOrTime.isEmpty) {
-        throw new IllegalArgumentException("optionValue cannot be defined when versionOrTime is empty.")
-      }
-      if (optionValue.isEmpty & versionOrTime.isDefined) {
-        throw new IllegalArgumentException("versionOrTime cannot be defined when optionValue is empty.")
-      }
+      withoutFilter
+    }
+  }
+
+  private def withFilter: DataFrame = {
+    if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
+      spark.read.format(format).load(filePath).filter(filter.get)
+    }
+    else {
+      exceptionCheck()
       spark.read.format(format)
         .option(optionValue.get, versionOrTime.get)
         .load(filePath)
-        .filter(filter)
+        .filter(filter.get)
+    }
+  }
+
+  private def withoutFilter: DataFrame = {
+    if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
+      spark.read.format(format).load(filePath)
+    }
+    else {
+      exceptionCheck()
+      spark.read.format(format)
+        .option(optionValue.get, versionOrTime.get)
+        .load(filePath)
+    }
+  }
+
+  private def exceptionCheck(): Unit = {
+    if (versionOrTime.isDefined & format != "delta") {
+      throw new IllegalArgumentException("versionOrTime cannot be defined when fileType is not delta.")
+    }
+    if (optionValue.isDefined & format != "delta") {
+      throw new IllegalArgumentException("optionValue cannot be defined when fileType is not delta.")
+    }
+    if (optionValue.isDefined & versionOrTime.isEmpty) {
+      throw new IllegalArgumentException("optionValue cannot be defined when versionOrTime is empty.")
+    }
+    if (optionValue.isEmpty & versionOrTime.isDefined) {
+      throw new IllegalArgumentException("versionOrTime cannot be defined when optionValue is empty.")
     }
   }
 }
@@ -73,12 +98,17 @@ case class QuerySource(query: String) extends
 
 case class TableSource(
                         tableName: String,
-                        filter: String
+                        filter: Option[String] = None
                       ) extends InputSources with SparkSessionWrapper {
 
   override def loadData: DataFrame = {
 
-    spark.table(tableName).filter(filter)
+    if (filter.isDefined) {
+      spark.table(tableName).filter(filter.get)
+    }
+    else {
+      spark.table(tableName)
+    }
   }
 }
 
