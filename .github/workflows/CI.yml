@@ -15,6 +15,23 @@ permissions:
   contents: read
 
 jobs:
+  job_id:
+    # ...
+
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      # actions/checkout MUST come before auth
+      - uses: 'actions/checkout@v3'
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          service_account: 'github-action-authentication@data-projects-322512.iam.gserviceaccount.com'
   build:
 
     runs-on: ubuntu-latest
