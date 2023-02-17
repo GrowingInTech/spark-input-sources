@@ -79,6 +79,42 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
+  "TableSource" should {
+    "return a df based on the table name and without a filter" in {
+      val strConfig: String =
+        """
+          |{
+          | type: table-source
+          | table-name: test_data
+          |}""".stripMargin
+      val config: InputSources = ConfigSource.fromConfig(ConfigFactory.parseString(strConfig))
+        .loadOrThrow[InputSources]
+      val df: DataFrame = config.loadData.sort("x", "y")
+      val expectedDF: DataFrame = Seq(
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (1, 0),
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+        (2, 3)
+      ).toDF("x", "y").sort("x", "y")
+
+      assert(
+        HashDataFrame.checksumDataFrame(df, 1) == HashDataFrame.checksumDataFrame(expectedDF, 1)
+      )
+    }
+  }
+
   "QuerySource" should {
     "return a df based on the sql query" in {
       val strConfig: String =
@@ -128,7 +164,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when delta is not specified but we have versionOrTime" in {
       val strConfig: String =
         s"""
@@ -147,7 +183,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when delta is not specified but we have optionValue" in {
       val strConfig: String =
         s"""
@@ -193,7 +229,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when optionValue is defined but versionOrTime is not" in {
       val strConfig: String =
         s"""
@@ -212,7 +248,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "FileSource" should {
+  "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when versionOrTime is defined but optionValue is not" in {
       val strConfig: String =
         s"""
