@@ -17,9 +17,6 @@ package com.growingintech.datasources
 
 import java.io.File
 
-import scala.reflect.io._
-import scala.reflect.io.Path._
-
 import com.growingintech.HashDataFrame
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
@@ -34,8 +31,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
   // github action SA validation; wont work locally
-  val saCredential: String = "/home/runner/work/spark-input-sources/spark-input-sources/"
-    .toDirectory.files.map(_.path).filter(name => name matches """.*\.json""").toArray.head
+  val saCredential: String = System.getenv("GOOGLE_GHA_CREDS_PATH")
 
   val spark: SparkSession = SparkSession
     .builder()
