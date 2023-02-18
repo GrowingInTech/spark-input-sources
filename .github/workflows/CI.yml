@@ -1,8 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Scala CI
 
 on:
@@ -32,6 +27,7 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
+          workload_identity_provider: 'projects/461060249876/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-action-authentication@data-projects-322512.iam.gserviceaccount.com'
 
       - uses: actions/checkout@v3
@@ -43,6 +39,6 @@ jobs:
           cache: 'sbt'
       - name: Run tests
         env:
-          GITHUB_TOKEN: ${{ secrets.ACTION_RUNNER }}
+          GITHUB_TOKEN: ${{ secrets.RUNNER }}
         run: sbt test
 
