@@ -34,7 +34,9 @@ ThisBuild / developers := List(
 )
 
 ThisBuild / description := "Input Sources is an abstraction for loading Spark data via configuration files."
-ThisBuild / licenses := List("The license" -> new URL("http://www.apache.org/licenses/LICENSE-2.0"))
+ThisBuild / licenses := List(
+  "Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0")
+)
 ThisBuild / homepage := Some(url("https://github.com/GrowingInTech/spark-input-sources"))
 
 // Remove all additional repository other than Maven Central from POM
