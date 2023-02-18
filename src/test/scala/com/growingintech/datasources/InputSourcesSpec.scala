@@ -271,6 +271,45 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
+  "FileSource" should {
+    "read the version 0 of the delta table without filter" in {
+      val strConfig: String =
+        s"""
+           |{
+           | type: file-source
+           | file-path: ${getClass.getResource("/input_test_data_delta").getPath}
+           | format: delta
+           | option-value: versionAsOf
+           | version-or-time: 0
+           |}""".stripMargin
+      val config: InputSources = ConfigSource.fromConfig(ConfigFactory.parseString(strConfig))
+        .loadOrThrow[InputSources]
+      val df: DataFrame = config.loadData.sort("x", "y")
+      val expectedDF: DataFrame = Seq(
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (1, 0),
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+        (2, 3)
+      ).toDF("x", "y").sort("x", "y")
+
+      assert(
+        HashDataFrame.checksumDataFrame(df, 1) == HashDataFrame.checksumDataFrame(expectedDF, 1)
+      )
+    }
+  }
+
   "FileSource exceptionCheck" should {
     "throw IllegalArgumentException when optionValue is defined but versionOrTime is not" in {
       val strConfig: String =
