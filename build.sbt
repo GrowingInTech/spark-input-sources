@@ -19,9 +19,6 @@ val projectVersion = "1.0.0"
 lazy val sparkVersion = "3.3.0"
 lazy val scalatestVersion = "3.2.14"
 
-// https://github.com/djspiewak/sbt-github-packages/issues/24
- githubTokenSource := TokenSource.GitConfig("github.token")  || TokenSource.Environment("GITHUB_TOKEN")
-
 lazy val commonSettings = Seq(
   organization := "com.growingintech",
   scalaVersion := "2.12.15",
@@ -53,10 +50,3 @@ lazy val root = (project in file("."))
       )
     }
   )
-
- resolvers += Resolver.githubPackages("GrowingInTech", projectName)
- githubOwner := "GrowingInTech"
- githubRepository := projectName
- publishMavenStyle := true
-//
-// publishTo := githubPublishTo.value
