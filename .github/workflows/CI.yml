@@ -21,16 +21,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # actions/checkout MUST come before auth
-      - uses: 'actions/checkout@v3'
+      - uses: actions/checkout@v3
 
       - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/461060249876/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-action-authentication@data-projects-322512.iam.gserviceaccount.com'
 
-      - uses: actions/checkout@v3
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
