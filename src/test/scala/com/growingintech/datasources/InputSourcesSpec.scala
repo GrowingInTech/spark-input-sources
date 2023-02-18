@@ -36,7 +36,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     .builder()
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-//    .config("credentialsFile", "/Users/dustin/Documents/code/Resume/web-resume/notebooks/ga-dustinsmith.json")
+    .config("credentialsFile", "/home/runner/work/spark-input-sources/spark-input-sources/gha-creds-26cf311093c8cb01.json")
     .appName("InputSource Test")
     .master("local[*]")
     .getOrCreate()
