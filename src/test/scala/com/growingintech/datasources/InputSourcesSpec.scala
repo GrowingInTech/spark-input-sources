@@ -19,7 +19,6 @@ import java.io.File
 
 import scala.reflect.io._
 import scala.reflect.io.Path._
-import scala.util.matching.Regex
 
 import com.growingintech.HashDataFrame
 import com.typesafe.config.ConfigFactory
@@ -34,9 +33,8 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
-  val json: Regex = """.*\.json""".r
   val saCredential: String = "/home/runner/work/spark-input-sources/spark-input-sources/"
-    .toDirectory.files.map(_.path).filter(name => name matches """.*\.xlsx""").toArray.head
+    .toDirectory.files.map(_.path).filter(name => name matches """.*\.json""").toArray.head
 
   val spark: SparkSession = SparkSession
     .builder()
