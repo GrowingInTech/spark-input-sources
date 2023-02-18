@@ -114,13 +114,22 @@ case class TableSource(
 
 case class BigQuerySource(
                            query: String,
-                           dataset: String
+                           dataset: String,
+                           fasterExecution: Boolean = false
                          ) extends InputSources with SparkSessionWrapper {
 
   override def loadData: DataFrame = {
 
     spark.conf.set("materializationDataset", dataset)
     spark.conf.set("viewsEnabled", "true")
-    spark.read.format("bigquery").option("query", query).load()
+
+    if (fasterExecution) {
+      // faster but creates temporary tables in the BQ account
+      spark.read.format("bigquery").option("query", query).load()
+    }
+    else {
+      // slower but no table creation
+      spark.read.format("bigquery").load(query)
+    }
   }
 }
