@@ -42,7 +42,7 @@ jobs:
         run: sbt coverage test
       - name: Coverage Report
         env:
-          GITHUB_TOKEN: ${{ secretes.CODECOV_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: sbt coverageReport
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
