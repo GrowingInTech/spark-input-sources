@@ -8,7 +8,11 @@ Input Sources is an abstraction for loading Spark data via configuration files. 
 * SQL sources
 * BigQuery sources
 
-This library aims to be easily extended to other sources by using sealed trait with case classes for each new sources.
+This library aims to be easily extended to other sources by using sealed trait with case classes for each new sources.  
+```scala
+// https://mvnrepository.com/artifact/com.growingintech/spark-input-sources
+libraryDependencies += "com.growingintech" %% "spark-input-sources" % "1.0.0"
+````
 
 ## New Sources
 Feel free to submit a PR for any new sources you would like to add. I don't plan on creating cloud accounts for all
