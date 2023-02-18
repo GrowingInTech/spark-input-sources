@@ -14,7 +14,7 @@
  *
  */
 val projectName = "spark-input-sources"
-val projectVersion = "0.1.2"
+val projectVersion = "1.0.0"
 
 lazy val sparkVersion = "3.3.0"
 lazy val scalatestVersion = "3.2.14"
