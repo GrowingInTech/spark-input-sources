@@ -27,7 +27,7 @@ jobs:
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: 'projects/461060249876/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          workload_identity_provider: 'projects/461060249876/locations/global/workloadIdentityPools/gh-action-pool/providers/gh-action-provider'
           service_account: 'github-action-authentication@data-projects-322512.iam.gserviceaccount.com'
 
       - name: Set up JDK 11
