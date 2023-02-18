@@ -32,8 +32,10 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
-  // github action SA validation; wont work locally
-  val saCredential: String = System.getenv("GOOGLE_GHA_CREDS_PATH")
+  val saCredential: String = scala.util.Properties.envOrElse(
+    "GOOGLE_GHA_CREDS_PATH",
+    s"${System.getenv("HOME")}/Documents/code/Resume/web-resume/notebooks/ga-dustinsmith.json"
+  )
 
   val spark: SparkSession = SparkSession
     .builder()
@@ -160,6 +162,43 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
         (2, 1),
         (2, 2)
       ).toDF("x", "y").sort("y")
+
+      assert(
+        HashDataFrame.checksumDataFrame(df, 1) == HashDataFrame.checksumDataFrame(expectedDF, 1)
+      )
+    }
+  }
+
+  "FileSource" should {
+    "return df based on the file path and without filter" in {
+      val strConfig: String =
+        s"""
+           |{
+           | type: file-source
+           | file-path: ${getClass.getResource("/input_test_data").getPath}
+           | format: parquet
+           |}""".stripMargin
+      val config: InputSources = ConfigSource.fromConfig(ConfigFactory.parseString(strConfig))
+        .loadOrThrow[InputSources]
+      val df: DataFrame = config.loadData.sort("x", "y")
+      val expectedDF: DataFrame = Seq(
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (1, 0),
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (2, 0),
+        (2, 1),
+        (2, 2),
+        (2, 3)
+      ).toDF("x", "y").sort("x", "y")
 
       assert(
         HashDataFrame.checksumDataFrame(df, 1) == HashDataFrame.checksumDataFrame(expectedDF, 1)
