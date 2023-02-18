@@ -24,7 +24,7 @@ lazy val scalatestVersion = "3.2.14"
 
 lazy val commonSettings = Seq(
   organization := "com.growingintech",
-  scalaVersion := "2.12.17",
+  scalaVersion := "2.12.15",
   version := projectVersion
 )
 
