@@ -32,11 +32,14 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
+  // github action SA validation; wont work locally
+  val saCredential: String = System.getenv("GOOGLE_GHA_CREDS_PATH")
+
   val spark: SparkSession = SparkSession
     .builder()
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    .config("credentialsFile", "/Users/dustin/Documents/code/Resume/web-resume/notebooks/ga-dustinsmith.json")
+    .config("credentialsFile", saCredential)
     .appName("InputSource Test")
     .master("local[*]")
     .getOrCreate()
@@ -267,7 +270,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
     }
   }
 
-  "BigQuerySource" ignore {
+  "BigQuerySource" should {
     "return a df after reading a BQ table with nested config test" in {
       val strConfig: String =
         s"""
