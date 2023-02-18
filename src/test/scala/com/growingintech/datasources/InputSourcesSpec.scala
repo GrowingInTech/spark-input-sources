@@ -17,6 +17,8 @@ package com.growingintech.datasources
 
 import java.io.File
 
+import scala.reflect.io.Directory
+
 import com.growingintech.HashDataFrame
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
