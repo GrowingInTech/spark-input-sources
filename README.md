@@ -1,4 +1,5 @@
 [![Scala CI](https://github.com/GrowingInTech/spark-input-sources/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/GrowingInTech/spark-input-sources/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/GrowingInTech/spark-input-sources/branch/main/graph/badge.svg?token=NYHE243GEU)](https://codecov.io/gh/GrowingInTech/spark-input-sources)
 # Input Sources
 Input Sources is an abstraction for loading Spark data via configuration files. Currently, it can handle
 
