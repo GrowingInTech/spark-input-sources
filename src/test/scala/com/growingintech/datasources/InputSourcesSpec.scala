@@ -34,7 +34,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
   val saCredential: String = "/home/runner/work/spark-input-sources/spark-input-sources/"
-    .toDirectory.files.map(_.path).filter(name => name matches """.*\.json""").toArray.head
+    .toDirectory.files.map(_.path).filter(name => name matches """gha-creds*.json""").toArray.head
 
   val spark: SparkSession = SparkSession
     .builder()
