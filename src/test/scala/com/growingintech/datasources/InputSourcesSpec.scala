@@ -17,7 +17,9 @@ package com.growingintech.datasources
 
 import java.io.File
 
-import scala.reflect.io.Directory
+import scala.reflect.io._
+import scala.reflect.io.Path._
+import scala.util.matching.Regex
 
 import com.growingintech.HashDataFrame
 import com.typesafe.config.ConfigFactory
@@ -32,11 +34,15 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
+  val json: Regex = """.*\.json""".r
+  val saCredential: String = "/home/runner/work/spark-input-sources/spark-input-sources/"
+    .toDirectory.files.map(_.path).filter(name => name matches """.*\.xlsx""").toArray.head
+
   val spark: SparkSession = SparkSession
     .builder()
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    .config("credentialsFile", "/home/runner/work/spark-input-sources/spark-input-sources/gha-creds-26cf311093c8cb01.json")
+    .config("credentialsFile", saCredential)
     .appName("InputSource Test")
     .master("local[*]")
     .getOrCreate()
