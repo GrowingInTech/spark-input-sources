@@ -28,108 +28,110 @@ sealed trait InputSources {
   def loadData: DataFrame
 }
 
-case class FileSource(
-                       filePath: String,
-                       filter: Option[String] = None,
-                       format: String,
-                       versionOrTime: Option[String] = None,
-                       optionValue: Option[String] = None
-                     ) extends InputSources with SparkSessionWrapper {
+object InputSources {
+  final case class FileSource(
+                               filePath: String,
+                               filter: Option[String] = None,
+                               format: String,
+                               versionOrTime: Option[String] = None,
+                               optionValue: Option[String] = None
+                             ) extends InputSources with SparkSessionWrapper {
 
-  override def loadData: DataFrame = {
+    override def loadData: DataFrame = {
 
-    if (filter.isDefined) {
-      withFilter
+      if (filter.isDefined) {
+        withFilter
+      }
+      else {
+        withoutFilter
+      }
     }
-    else {
-      withoutFilter
+
+    private def withFilter: DataFrame = {
+      if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
+        spark.read.format(format).load(filePath).filter(filter.get)
+      }
+      else {
+        exceptionCheck()
+        spark.read.format(format)
+          .option(optionValue.get, versionOrTime.get)
+          .load(filePath)
+          .filter(filter.get)
+      }
+    }
+
+    private def withoutFilter: DataFrame = {
+      if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
+        spark.read.format(format).load(filePath)
+      }
+      else {
+        exceptionCheck()
+        spark.read.format(format)
+          .option(optionValue.get, versionOrTime.get)
+          .load(filePath)
+      }
+    }
+
+    private def exceptionCheck(): Unit = {
+      if (versionOrTime.isDefined & format != "delta") {
+        throw new IllegalArgumentException("versionOrTime cannot be defined when fileType is not delta.")
+      }
+      if (optionValue.isDefined & format != "delta") {
+        throw new IllegalArgumentException("optionValue cannot be defined when fileType is not delta.")
+      }
+      if (optionValue.isDefined & versionOrTime.isEmpty) {
+        throw new IllegalArgumentException("optionValue cannot be defined when versionOrTime is empty.")
+      }
+      if (optionValue.isEmpty & versionOrTime.isDefined) {
+        throw new IllegalArgumentException("versionOrTime cannot be defined when optionValue is empty.")
+      }
+    }
+  }
+
+  final case class QuerySource(query: String) extends
+    InputSources with SparkSessionWrapper {
+
+    override def loadData: DataFrame = {
+
+      spark.sql(query)
     }
   }
 
-  private def withFilter: DataFrame = {
-    if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
-      spark.read.format(format).load(filePath).filter(filter.get)
-    }
-    else {
-      exceptionCheck()
-      spark.read.format(format)
-        .option(optionValue.get, versionOrTime.get)
-        .load(filePath)
-        .filter(filter.get)
-    }
-  }
+  final case class TableSource(
+                                tableName: String,
+                                filter: Option[String] = None
+                              ) extends InputSources with SparkSessionWrapper {
 
-  private def withoutFilter: DataFrame = {
-    if (format != "delta" & versionOrTime.isEmpty & optionValue.isEmpty) {
-      spark.read.format(format).load(filePath)
-    }
-    else {
-      exceptionCheck()
-      spark.read.format(format)
-        .option(optionValue.get, versionOrTime.get)
-        .load(filePath)
+    override def loadData: DataFrame = {
+
+      if (filter.isDefined) {
+        spark.table(tableName).filter(filter.get)
+      }
+      else {
+        spark.table(tableName)
+      }
     }
   }
 
-  private def exceptionCheck(): Unit = {
-    if (versionOrTime.isDefined & format != "delta") {
-      throw new IllegalArgumentException("versionOrTime cannot be defined when fileType is not delta.")
-    }
-    if (optionValue.isDefined & format != "delta") {
-      throw new IllegalArgumentException("optionValue cannot be defined when fileType is not delta.")
-    }
-    if (optionValue.isDefined & versionOrTime.isEmpty) {
-      throw new IllegalArgumentException("optionValue cannot be defined when versionOrTime is empty.")
-    }
-    if (optionValue.isEmpty & versionOrTime.isDefined) {
-      throw new IllegalArgumentException("versionOrTime cannot be defined when optionValue is empty.")
-    }
-  }
-}
+  final case class BigQuerySource(
+                                   query: String,
+                                   dataset: String,
+                                   fasterExecution: Boolean = false
+                                 ) extends InputSources with SparkSessionWrapper {
 
-case class QuerySource(query: String) extends
-  InputSources with SparkSessionWrapper {
+    override def loadData: DataFrame = {
 
-  override def loadData: DataFrame = {
+      spark.conf.set("materializationDataset", dataset)
+      spark.conf.set("viewsEnabled", "true")
 
-    spark.sql(query)
-  }
-}
-
-case class TableSource(
-                        tableName: String,
-                        filter: Option[String] = None
-                      ) extends InputSources with SparkSessionWrapper {
-
-  override def loadData: DataFrame = {
-
-    if (filter.isDefined) {
-      spark.table(tableName).filter(filter.get)
-    }
-    else {
-      spark.table(tableName)
-    }
-  }
-}
-
-case class BigQuerySource(
-                           query: String,
-                           dataset: String,
-                           fasterExecution: Boolean = false
-                         ) extends InputSources with SparkSessionWrapper {
-
-  override def loadData: DataFrame = {
-
-    spark.conf.set("materializationDataset", dataset)
-    spark.conf.set("viewsEnabled", "true")
-
-    if (fasterExecution) {
-      // faster but creates temporary tables in the BQ account
-      spark.read.format("bigquery").option("query", query).load()
-    }
-    else {
-      // slower but no table creation
-      spark.read.format("bigquery").load(query)
+      if (fasterExecution) {
+        // faster but creates temporary tables in the BQ account
+        spark.read.format("bigquery").option("query", query).load()
+      }
+      else {
+        // slower but no table creation
+        spark.read.format("bigquery").load(query)
+      }
     }
   }
 }
