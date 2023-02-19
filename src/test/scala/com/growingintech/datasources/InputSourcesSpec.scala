@@ -56,6 +56,7 @@ class InputSourcesSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll 
   override def afterAll(): Unit = {
 
     new Directory(new File("spark-warehouse")).deleteRecursively
+    spark.catalog.dropTempView("test_data")
     super.afterAll()
   }
 

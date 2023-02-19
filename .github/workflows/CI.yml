@@ -35,7 +35,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          cache: 'sbt'
       - name: Run tests
         env:
           GITHUB_TOKEN: ${{ secrets.RUNNER }}

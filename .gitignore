@@ -15,6 +15,7 @@ spark-warehouse/
 *.out
 *.sc
 derby.log
+**/.crc
 
 # sbt specific
 .bsp/
