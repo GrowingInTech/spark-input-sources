@@ -10,7 +10,7 @@ Input Sources is an abstraction for loading Spark data via configuration files. 
 
 This library aims to be easily extended to other sources by using sealed trait with case classes for each new sources.  
 ```scala
-// https://mvnrepository.com/artifact/com.growingintech/spark-input-sources
+// https://central.sonatype.com/artifact/com.growingintech/spark-input-sources_2.12/1.0.0
 libraryDependencies += "com.growingintech" %% "spark-input-sources" % "1.0.0"
 ````
 
